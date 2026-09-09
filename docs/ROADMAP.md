@@ -1,72 +1,74 @@
-# Feuille de route
+# Roadmap
 
-## Phase 1 : socle
+## Phase 1: foundation
 
-- [x] Package Swift, AppKit et composants séparés.
-- [x] Icône de barre de menus et routage des gestes.
-- [x] Observation des apparitions, disparitions et changements de volumes.
-- [x] Inventaire en lecture seule et tests de la logique isolée.
-- [x] Scripts de build et d’assemblage du bundle.
-- [ ] Validation visuelle des gestes sur le Mac.
+- [x] Swift package, AppKit, and separate components.
+- [x] Menu bar icon and gesture routing.
+- [x] Observe volume appearances, disappearances, and changes.
+- [x] Read-only inventory and isolated logic tests.
+- [x] Build and bundle assembly scripts.
+- [ ] Visually validate gestures on the Mac.
 
-## Phase 2 : fonction principale
+## Phase 2: primary functionality
 
-- [ ] Capturer des métadonnées de supports de test APFS et USB.
-- [ ] Résoudre la topologie physique APFS, y compris plusieurs physical stores.
-- [ ] Exclure les disques internes, les supports système et les types inconnus.
-- [ ] Définir une identité persistante avec UUID et métadonnées matérielles.
-- [ ] Refuser les collisions et identités ambiguës, même à nom identique.
-- [ ] Ajouter PreferencesStore et gérer les sélections absentes.
-- [ ] Injecter les opérations natives dans EjectionService.
-- [ ] Revalider chaque cible immédiatement avant son opération.
-- [ ] Démonter normalement, puis éjecter avec confirmation système.
-- [ ] Bloquer les demandes concurrentes, gérer les résultats indépendamment.
-- [ ] Conserver un état en attente lors d’un délai dépassé.
-- [ ] Tester les déconnexions, disques occupés et échecs partiels.
+- [ ] Capture metadata from APFS and USB test media.
+- [ ] Resolve physical APFS topology, including multiple physical stores.
+- [ ] Exclude internal disks, system media, and unknown types.
+- [ ] Define persistent identity using UUIDs and hardware metadata.
+- [ ] Reject collisions and ambiguous identities, even when names match.
+- [ ] Add PreferencesStore and manage selections for disconnected disks.
+- [ ] Inject native operations into EjectionService.
+- [ ] Revalidate each target immediately before its operation.
+- [ ] Unmount normally, then eject with system confirmation.
+- [ ] Prevent concurrent requests and handle results independently.
+- [ ] Keep operations pending when a timeout occurs.
+- [ ] Test disconnections, busy disks, and partial failures.
 
-## Phase 3 : compléments
+## Phase 3: additional features
 
-- [ ] DiskImageService : inventaire structuré et regroupement des images.
-- [ ] Valider `hdiutil info -plist` comme adaptateur éventuel.
-- [ ] Actions pour tous les externes et toutes les images.
-- [ ] Réglages en menu, lancement à la connexion avec SMAppService.
-- [ ] Option d’inclusion des images désactivée par défaut.
-- [ ] États accessibles : prêt, en cours, terminé, partiel, absent.
-- [ ] Confirmation visible sans autorisation de notifications.
+- [x] Settings menu with persistent System Default, English, and French options.
+- [x] Localized interface strings, errors, tooltip, and accessibility label.
+- [ ] Visually validate both languages and switching after installation.
+- [ ] DiskImageService: structured inventory and image grouping.
+- [ ] Validate `hdiutil info -plist` as a possible adapter.
+- [ ] Actions for all external disks and all disk images.
+- [ ] Settings menu and launch at login using SMAppService.
+- [ ] Keep the option to include disk images disabled by default.
+- [ ] Accessible states: ready, in progress, completed, partial, disconnected.
+- [ ] Visible confirmation without notification permission.
 
-## Phase 4 : installation locale
+## Phase 4: local installation
 
-- [x] Bundle, identifiant, scripts de build, installation et ZIP local.
-- [ ] Icône de bundle dédiée.
-- [ ] Vérifier le lancement depuis Applications et les mises à jour locales.
-- [ ] Vérifier conservation des préférences et ouverture de session.
+- [x] Bundle, identifier, build scripts, installation script, and local ZIP.
+- [ ] Dedicated application icon.
+- [ ] Verify launching from Applications and local updates.
+- [ ] Verify preference retention and launch at login.
 
-## Phase 5 : distribution
+## Phase 5: distribution
 
-- [x] Application publique sous licence MIT : leokun/eject-dock.
-- [ ] Choisir le tap et l’architecture de distribution.
-- [ ] Ajouter la CI macOS après validation du socle local.
-- [ ] Contrôler l’égalité tag, VERSION et version du bundle.
-- [ ] Signer Developer ID, activer Hardened Runtime, notariser et agrafer.
-- [ ] Vérifier le bundle final, archiver, calculer SHA-256 et publier.
-- [ ] Créer le tap homebrew-tools et son cask avec les valeurs vérifiées.
-- [ ] Tester installation, mise à jour, désinstallation et nettoyage explicite.
+- [x] Public application under the MIT license: leokun/eject-dock.
+- [ ] Choose the tap and distribution architecture.
+- [ ] Add macOS CI after validating the local foundation.
+- [ ] Check that the tag, VERSION, and bundle version match.
+- [ ] Sign with Developer ID, enable Hardened Runtime, notarize, and staple.
+- [ ] Verify the final bundle, archive it, calculate SHA-256, and publish.
+- [ ] Create the homebrew-tools tap and its cask using verified values.
+- [ ] Test installation, upgrades, uninstallation, and explicit cleanup.
 
-## Décisions initiales
+## Initial decisions
 
-macOS 13 minimum : SMAppService.mainApp est disponible à partir de macOS 13,
-vérifié dans le header du SDK local. Les API d’observation Disk Arbitration
-retenues sont disponibles depuis macOS 10.4. La compatibilité effective avec
-macOS 13 nécessite encore un test sur cette version.
+Minimum macOS version: 13. SMAppService.mainApp is available starting with macOS 13,
+as verified in the local SDK header. The selected Disk Arbitration observation
+APIs have been available since macOS 10.4. Actual macOS 13 compatibility still
+requires testing on that version.
 
-Swift Package Manager et AppKit suffisent pour le socle. Swift tools 5.9
-permet de garder une base simple sans imposer Swift 6 aux contributeurs.
-Les callbacks Disk Arbitration sont exécutés sur la boucle principale.
+Swift Package Manager and AppKit are sufficient for the foundation. Swift tools
+5.9 keeps the baseline simple without requiring contributors to use Swift 6.
+Disk Arbitration callbacks run on the main run loop.
 
-La topologie logique observée ne prouve ni l’identité persistante ni la nature
-physique du périphérique. La phase 2 doit résoudre ces deux points avant
-d’exposer la moindre action d’éjection. Ne jamais inférer une identité à partir
-d’un nom ou d’un numéro BSD seul.
+The observed logical topology does not establish persistent identity or prove
+that a device is physical. Phase 2 must resolve both points before exposing any
+ejection action. Never infer identity from a name or a BSD number alone.
 
-Aucune éjection réelle, publication distante ou modification de Gatekeeper
-n’est nécessaire à cette première phase.
+No real disk ejection, remote publication, or Gatekeeper change is required for
+this initial phase.

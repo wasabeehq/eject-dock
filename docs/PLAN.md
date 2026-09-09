@@ -1,420 +1,455 @@
-# Projet EjectDock
+# EjectDock project
 
-Créer une petite application macOS permettant d’éjecter en un clic les disques présélectionnés avant de débrancher une station d’accueil.
+Create a small macOS application that ejects preselected disks with one click
+before unplugging a docking station.
 
-## 1. Objectif et périmètre
+## 1. Purpose and scope
 
-Usage principal :
-- Un disque externe de sauvegarde reste habituellement connecté au dock.
-- L’utilisateur sélectionne une fois ce disque dans les réglages.
-- Un clic gauche sur l’icône de barre de menus lance son éjection.
-- L’application confirme le résultat avant que l’utilisateur débranche le dock.
+Primary use case:
 
-L’application doit :
-- Fonctionner uniquement dans la barre de menus, sans icône permanente dans le Dock.
-- Permettre de sélectionner plusieurs disques pour l’action principale.
-- Mémoriser cette sélection entre les redémarrages et les branchements.
-- Proposer une action pour éjecter toutes les images disque montées.
-- Être installable et actualisable avec Homebrew.
+- An external backup drive usually stays connected to the dock.
+- The user selects this drive once in settings.
+- A left click on the menu bar icon starts ejecting it.
+- The application confirms the result before the user unplugs the dock.
 
-Ne pas ajouter en première version :
-- Éjection automatique à la mise en veille.
-- Synchronisation, compte utilisateur ou télémétrie.
-- Mise à jour automatique intégrée à l’application.
-- Fonctionnalités Windows ou Linux.
-- Éjection forcée ou arrêt automatique des processus bloquants.
+The application must:
 
-## 2. Comportement de l’interface
+- Run exclusively in the menu bar, without a permanent Dock icon.
+- Allow multiple disks to be selected for the primary action.
+- Remember the selection across restarts and reconnections.
+- Provide an action to eject all mounted disk images.
+- Support installation and updates through Homebrew.
 
-### Clic gauche
+Do not include in the first version:
 
-Éjecter les disques sélectionnés qui sont actuellement connectés.
+- Automatic ejection on sleep.
+- Synchronization, user accounts, or telemetry.
+- Built-in automatic updates.
+- Windows or Linux functionality.
+- Forced ejection or automatic termination of blocking processes.
 
-- Ne pas demander de confirmation à chaque clic.
-- Ignorer les disques sélectionnés qui sont absents.
-- Empêcher les opérations concurrentes déclenchées par des clics répétés.
-- Si aucune sélection n’a encore été configurée, ouvrir le menu.
-- Si la sélection existe mais qu’aucun disque correspondant n’est connecté,
-  afficher un état explicite sans éjecter d’autres disques.
+## 2. Interface behavior
 
-### Clic droit
+### Left click
 
-Ouvrir un menu natif macOS.
+Eject the selected disks that are currently connected.
 
-Prévoir également Option + clic pour ouvrir ce menu.
-Vérifier le comportement du clic secondaire et de Contrôle + clic.
+- Do not request confirmation on every click.
+- Ignore selected disks that are disconnected.
+- Prevent concurrent operations triggered by repeated clicks.
+- Open the menu if no selection has been configured.
+- If a selection exists but none of its disks are connected, display an explicit
+  status without ejecting any other disks.
 
-Ne pas utiliser Commande + clic comme geste principal alternatif,
-afin de préserver les interactions habituelles de la barre de menus.
+### Right click
 
-### Organisation proposée du menu
+Open a native macOS menu.
 
-- Éjecter la sélection
-- Éjecter tous les disques externes
-- Éjecter toutes les images disque
-- Séparateur
-- Disques externes
-  - Un sous-menu par disque physique :
-    - État et volumes associés
-    - Éjecter maintenant
-    - Inclure dans l’éjection au clic gauche
-- Images disque
-  - Une entrée par image montée :
-    - Éjecter maintenant
-- Séparateur
-- Réglages
-- À propos
-- Quitter
+Also support Option + click to open this menu. Verify secondary click and
+Control + click behavior.
 
-Une sélection persistante doit rester consultable et supprimable
-même lorsque le disque concerné est débranché.
+Do not use Command + click as the main alternative gesture, to preserve standard
+menu bar interactions.
 
-### Réglages
+### Proposed menu layout
 
-- Lancement à l’ouverture de session.
-- Gestion des disques sélectionnés, y compris ceux qui sont absents.
-- Option désactivée par défaut :
-  inclure toutes les images disque dans l’action du clic gauche.
+- Eject Selected Disks
+- Eject All External Disks
+- Eject All Disk Images
+- Separator
+- External Disks
+  - One submenu per physical disk:
+    - Status and associated volumes
+    - Eject Now
+    - Include in Left-Click Ejection
+- Disk Images
+  - One entry per mounted image:
+    - Eject Now
+- Separator
+- Settings
+- About
+- Quit
 
-Commencer avec un menu de réglages.
-Créer une fenêtre SwiftUI seulement si cela améliore réellement l’usage.
+Persistent selections must remain viewable and removable even when the relevant
+disk is disconnected.
 
-### Retour visuel
+### Settings
 
-Distinguer :
-- Sélection connectée et prête à être éjectée.
-- Éjection en cours.
-- Éjection terminée.
-- Résultat partiel ou échec.
-- Aucun disque sélectionné connecté.
+- Launch at login.
+- Manage selected disks, including disconnected ones.
+- Disabled by default: include all disk images in the left-click action.
 
-Fournir une info-bulle et des libellés accessibles.
-Ne pas utiliser uniquement la couleur pour transmettre l’état.
+Start with a settings menu. Create a SwiftUI window only if it meaningfully
+improves usability.
 
-La réussite doit être visible sans dépendre de l’autorisation
-des notifications macOS.
+### Visual feedback
 
-Attention au libellé :
-- « Sélection éjectée » si seuls les disques sélectionnés ont été éjectés.
-- Ne pas annoncer « Vous pouvez débrancher le dock » si d’autres disques
-  externes restent montés.
+Distinguish between:
 
-## 3. Stack technique
+- Selected disks connected and ready to eject.
+- Ejection in progress.
+- Ejection completed.
+- Partial result or failure.
+- No selected disks connected.
+
+Provide a tooltip and accessible labels. Do not rely on color alone to convey
+status.
+
+Success must be visible without depending on macOS notification permission.
+
+Use accurate wording:
+
+- "Selected disks ejected" if only the selected disks were ejected.
+- Do not announce "You can unplug the dock" if other external disks remain mounted.
+
+## 3. Technology stack
 
 - Swift.
-- AppKit pour NSStatusItem, les clics et les menus.
-- SwiftUI facultatif pour une fenêtre de réglages.
-- Disk Arbitration pour observer les disques et effectuer
-  les opérations natives de démontage et d’éjection.
-- UserDefaults pour les préférences simples.
-- ServiceManagement pour le lancement à l’ouverture de session,
-  selon la version minimale de macOS retenue.
-- Journalisation locale avec les outils système.
+- AppKit for NSStatusItem, clicks, and menus.
+- Optional SwiftUI for a settings window.
+- Disk Arbitration to observe disks and perform native unmount and eject operations.
+- UserDefaults for simple preferences.
+- ServiceManagement for launch at login, depending on the minimum macOS version.
+- Local logging using system tools.
 
-Vérifier les API et leur disponibilité avant de fixer la version
-minimale de macOS.
+Verify APIs and their availability before setting the minimum macOS version.
 
-Ne pas demander de permissions d’accessibilité ou d’accès complet
-au disque sans besoin technique démontré.
+Do not request Accessibility or Full Disk Access permissions without a
+demonstrated technical need.
 
-## 4. Découverte et identification des disques
+## 4. Disk discovery and identification
 
-Distinguer :
-- Disques physiques externes.
-- Volumes et partitions appartenant au même disque.
-- Images disque montées.
-- Disques internes et volumes système.
-- Partages réseau, exclus du périmètre initial.
+Distinguish between:
 
-Présenter une seule cible d’éjection par disque physique.
-Un disque contenant plusieurs volumes ne doit pas apparaître
-comme plusieurs périphériques indépendants à débrancher.
+- External physical disks.
+- Volumes and partitions belonging to the same disk.
+- Mounted disk images.
+- Internal disks and system volumes.
+- Network shares, excluded from the initial scope.
 
-Ne pas utiliser comme identifiant persistant :
-- Le nom affiché.
-- Le chemin de montage.
-- Le numéro BSD seul, tel que disk4.
+Present one ejection target per physical disk. A disk containing multiple volumes
+must not appear as several independent devices to unplug.
 
-Déterminer une stratégie d’identité à partir des métadonnées
-réellement disponibles : UUID et identifiants matériels pertinents.
+Do not use the following as persistent identifiers:
 
-Tester cette stratégie avec APFS et les boîtiers USB.
-En cas d’identité absente, dupliquée ou ambiguë, ne pas sélectionner
-automatiquement un disque sur la seule base de son nom.
+- Display name.
+- Mount path.
+- BSD number alone, such as disk4.
 
-Pour les images disque :
-- Identifier les images réellement montées.
-- Ne pas se baser uniquement sur une extension ou un nom de volume.
-- Regrouper les volumes d’une même image.
-- Prévoir un adaptateur utilisant une sortie structurée de hdiutil
-  si nécessaire après validation des API disponibles.
+Determine an identity strategy using metadata that is actually available: UUIDs
+and relevant hardware identifiers.
 
-## 5. Moteur d’éjection
+Test this strategy with APFS and USB enclosures. If identity is missing,
+duplicated, or ambiguous, do not automatically select a disk by name alone.
 
-Séparer la logique système de l’interface.
+For disk images:
 
-Pour chaque demande :
-1. Capturer la liste des cibles demandées.
-2. Revalider leur présence, leur identité et leur admissibilité.
-3. Démonter normalement les volumes concernés.
-4. Éjecter le disque physique ou détacher l’image.
-5. Attendre le résultat système.
-6. Actualiser l’inventaire et présenter le résultat.
+- Identify images that are actually mounted.
+- Do not rely only on a file extension or volume name.
+- Group volumes belonging to the same image.
+- Provide an adapter using structured hdiutil output if necessary after
+  validating the available APIs.
 
-Gérer explicitement :
-- Disque occupé.
-- Sauvegarde en cours.
-- Déconnexion pendant l’opération.
-- Éjection partielle.
-- Erreur système.
-- Opération qui tarde à répondre.
-- Disque déjà démonté mais toujours connecté.
+## 5. Ejection engine
 
-Ne jamais :
-- Forcer l’éjection.
-- Tuer un processus.
-- Arrêter automatiquement une sauvegarde.
-- Afficher une réussite avant confirmation.
-- Éjecter un disque interne ou système.
+Separate system logic from the interface.
 
-Si un délai est dépassé, afficher un état incertain ou en attente,
-sans assimiler ce délai à une réussite.
+For each request:
 
-Traiter les cibles indépendamment pour qu’un disque bloqué
-n’empêche pas de rendre compte des autres résultats.
+1. Capture the requested targets.
+2. Revalidate their presence, identity, and eligibility.
+3. Unmount the relevant volumes normally.
+4. Eject the physical disk or detach the image.
+5. Wait for the system result.
+6. Refresh the inventory and present the result.
 
-## 6. Organisation du code
+Explicitly handle:
 
-Prévoir des modules ou composants simples :
+- Busy disks.
+- Backups in progress.
+- Disconnection during an operation.
+- Partial ejection.
+- System errors.
+- Operations that are slow to respond.
+- Disks that are already unmounted but still connected.
 
-- App : cycle de vie et lancement.
-- MenuBarController : icône, gestes et construction du menu.
-- DiskInventory : observation et inventaire.
-- DiskIdentity : identification persistante.
-- EjectionService : opérations système.
-- DiskImageService : identification et détachement des images.
-- PreferencesStore : sélection et options.
-- LoginItemService : ouverture de session.
-- Models : disques, volumes, états et résultats.
+Never:
 
-Injecter les services système pour tester la logique sans éjecter
-de vrais disques.
+- Force ejection.
+- Kill a process.
+- Automatically stop a backup.
+- Display success before confirmation.
+- Eject an internal or system disk.
 
-Éviter les dépendances externes tant qu’un besoin concret
-ne les justifie pas.
+If a timeout occurs, display an uncertain or pending state; do not treat the
+timeout as success.
 
-## 7. Compilation et installation locale
+Process targets independently so that a blocked disk does not prevent reporting
+results for the others.
 
-Commencer par inspecter :
-- Les instructions du dépôt.
-- La version de macOS et l’architecture du Mac.
-- Les outils Swift et le SDK macOS disponibles.
-- La présence des Command Line Tools ou de Xcode.
-- Les conventions Git existantes.
+## 6. Code organization
 
-Voie recommandée :
-- Swift Package Manager pour compiler.
-- Script pour assembler le bundle EjectDock.app.
-- Info.plist, icône et identifiant de bundle stable.
-- Signature locale adaptée.
-- Script d’installation dans le dossier Applications choisi.
+Use simple modules or components:
 
-Si les capacités retenues rendent un projet Xcode plus pertinent,
-documenter la raison et conserver un build automatisable.
+- App: lifecycle and startup.
+- MenuBarController: icon, gestures, and menu construction.
+- DiskInventory: observation and inventory.
+- DiskIdentity: persistent identification.
+- EjectionService: system operations.
+- DiskImageService: image identification and detachment.
+- PreferencesStore: selection and options.
+- LoginItemService: launch at login.
+- Models: disks, volumes, states, and results.
 
-Fournir des commandes simples pour :
-- Compiler.
-- Tester.
-- Installer localement.
-- Lancer.
-- Produire une archive de distribution.
+Inject system services to test the logic without ejecting real disks.
 
-Ne pas désactiver Gatekeeper globalement.
+Avoid external dependencies until a concrete need justifies them.
 
-## 8. Distribution Homebrew
+## 7. Building and local installation
 
-Utiliser un tap personnel, sans dépendre d’une acceptation
-dans le catalogue officiel Homebrew.
+Start by inspecting:
 
-Organisation cible :
-- Dépôt de l’application.
-- Dépôt homebrew-tools.
-- Fichier Casks/ejectdock.rb.
-- Release versionnée contenant le ZIP de l’application.
+- Repository instructions.
+- macOS version and Mac architecture.
+- Available Swift tools and macOS SDK.
+- Availability of Command Line Tools or Xcode.
+- Existing Git conventions.
 
-Le cask doit contenir :
-- Version explicite.
-- URL de téléchargement versionnée.
-- SHA-256 de l’archive.
-- Nom et description.
-- Page du projet.
-- Version minimale de macOS.
-- Déclaration du bundle à installer.
+Recommended approach:
 
-Installation visée :
+- Swift Package Manager for compilation.
+- A script to assemble EjectDock.app.
+- Info.plist, an icon, and a stable bundle identifier.
+- Appropriate local signing.
+- An installation script targeting the chosen Applications directory.
 
-brew tap PROPRIETAIRE/tools
+If the required capabilities make an Xcode project more suitable, document why
+and retain an automated build process.
+
+Provide simple commands to:
+
+- Build.
+- Test.
+- Install locally.
+- Launch.
+- Produce a distribution archive.
+
+Do not disable Gatekeeper globally.
+
+## 8. Homebrew distribution
+
+Use a personal tap, without depending on acceptance into the official Homebrew
+catalog.
+
+Target structure:
+
+- Application repository.
+- homebrew-tools repository.
+- Casks/ejectdock.rb file.
+- Versioned release containing the application ZIP.
+
+The cask must contain:
+
+- An explicit version.
+- A versioned download URL.
+- The archive's SHA-256.
+- Name and description.
+- Project homepage.
+- Minimum macOS version.
+- A declaration of the application bundle to install.
+
+Intended installation:
+
+```sh
+brew tap OWNER/tools
 brew install --cask ejectdock
+```
 
-Mise à jour :
+Upgrade:
 
+```sh
 brew upgrade --cask ejectdock
+```
 
-Désinstallation :
+Uninstall:
 
+```sh
 brew uninstall --cask ejectdock
+```
 
-Conserver les préférences lors d’une désinstallation ordinaire.
-Réserver leur suppression explicite à une opération de nettoyage.
+Preserve preferences during ordinary uninstallation. Remove them only through
+an explicit cleanup operation.
 
-Ne pas publier de cask contenant une URL fictive ou un checksum
-non vérifié.
+Do not publish a cask with a fictitious URL or an unverified checksum.
 
-Si les dépôts ou les releases doivent rester privés, vérifier
-l’authentification du téléchargement des archives :
-l’accès Git au tap ne suffit pas nécessairement.
+If repositories or releases need to remain private, verify authentication for
+archive downloads: Git access to the tap alone may not be sufficient.
 
-## 9. Signature et architectures
+## 9. Signing and architectures
 
-Séparer deux circuits :
+Keep two separate workflows:
 
-Développement personnel :
-- Compilation locale.
-- Signature locale.
-- Installation sur le Mac de développement.
-- Aucun compte développeur payant nécessaire pour ce circuit.
+Personal development:
 
-Distribution téléchargée :
-- Signature Developer ID.
-- Hardened Runtime selon les exigences Apple.
-- Notarisation.
-- Agrafage du ticket au bundle avant archivage.
-- Vérification de l’archive finale et test de lancement.
+- Local compilation.
+- Local signing.
+- Installation on the development Mac.
+- No paid developer account required for this workflow.
 
-Homebrew ne contourne pas les exigences de Gatekeeper.
+Downloaded distribution:
 
-Sans certificat de distribution, documenter clairement les limites.
-Ne pas intégrer de contournement automatique de sécurité au cask.
+- Developer ID signing.
+- Hardened Runtime according to Apple's requirements.
+- Notarization.
+- Staple the ticket to the bundle before archiving.
+- Verify the final archive and test launching the application.
 
-Commencer avec l’architecture du Mac de développement.
-Pour distribuer sur Intel et Apple Silicon, choisir ensuite :
-- Un bundle universel.
-- Ou deux archives avec URL et checksum par architecture.
+Homebrew does not bypass Gatekeeper requirements.
 
-## 10. Automatisation des releases
+Without a distribution certificate, clearly document the limitations. Do not
+include an automatic security bypass in the cask.
 
-Après validation du build local :
+Start with the development Mac's architecture. For Intel and Apple Silicon
+distribution, later choose between:
 
-- Exécuter les tests dans une CI macOS.
-- Compiler une release à partir d’un tag versionné.
-- Vérifier la cohérence entre tag et version du bundle.
-- Signer et notariser si les identifiants sont configurés.
-- Produire le ZIP et son SHA-256.
-- Publier la release.
-- Mettre à jour le cask avec la version et le checksum exacts.
+- A universal bundle.
+- Two archives with architecture-specific URLs and checksums.
 
-Limiter les permissions des workflows.
-Ne pas exposer les certificats ou secrets dans les logs.
+## 10. Release automation
 
-La création des dépôts distants, la publication et la configuration
-des secrets constituent une étape distincte du développement local.
+After validating the local build:
+
+- Run tests in macOS CI.
+- Build a release from a version tag.
+- Verify that the tag and bundle version match.
+- Sign and notarize if credentials are configured.
+- Produce the ZIP and its SHA-256.
+- Publish the release.
+- Update the cask with the exact version and checksum.
+
+Limit workflow permissions. Do not expose certificates or secrets in logs.
+
+Creating remote repositories, publishing, and configuring secrets are separate
+steps from local development.
 
 ## 11. Validation
 
-Tests automatisés ciblés :
-- Sélection persistante.
-- Deux disques portant le même nom.
-- Identité ambiguë ou modifiée.
-- Regroupement des volumes par disque.
-- Exclusion des disques internes et système.
-- Déconnexion pendant une opération.
-- Échec partiel.
-- Clics répétés.
-- Aucune cible connectée.
-- Reconnaissance et regroupement des images disque.
+Focused automated tests:
 
-Tests manuels :
-- Clic gauche, clic droit et Option + clic.
-- Disque externe avec un volume.
-- Disque externe avec plusieurs volumes, si disponible.
-- Plusieurs disques, dont un seul sélectionné.
-- Plusieurs images disque montées.
-- Disque occupé et sauvegarde en cours.
-- Débranchement et rebranchement.
-- Redémarrage de l’application.
-- Ouverture de session.
-- Installation, mise à jour et désinstallation Homebrew.
-- Conservation des préférences pendant une mise à jour.
+- Persistent selection.
+- Two disks with the same name.
+- Ambiguous or changed identity.
+- Grouping volumes by disk.
+- Excluding internal and system disks.
+- Disconnection during an operation.
+- Partial failure.
+- Repeated clicks.
+- No connected targets.
+- Recognizing and grouping disk images.
 
-Utiliser d’abord des images disque temporaires et des supports
-de test. Ne pas interrompre une sauvegarde réelle pour un test.
+Manual tests:
 
-Indiquer les scénarios non testés faute de matériel.
+- Left click, right click, and Option + click.
+- An external disk with one volume.
+- An external disk with multiple volumes, if available.
+- Multiple disks with only one selected.
+- Multiple mounted disk images.
+- A busy disk and a backup in progress.
+- Disconnecting and reconnecting.
+- Restarting the application.
+- Launch at login.
+- Homebrew installation, upgrade, and uninstallation.
+- Preference retention during an upgrade.
 
-## 12. Ordre d’implémentation
+Start with temporary disk images and test media. Do not interrupt a real backup
+for a test.
 
-Phase 1 : socle
-- Initialiser le projet.
-- Obtenir un build reproductible.
-- Afficher l’icône et son menu.
-- Valider les gestes souris.
-- Afficher l’inventaire en lecture seule.
+Document scenarios that could not be tested because hardware was unavailable.
 
-Phase 2 : fonction principale
-- Identifier les disques.
-- Persister la sélection.
-- Implémenter l’éjection normale.
-- Ajouter les états et les erreurs.
-- Valider sur un support de test.
+## 12. Implementation order
 
-Phase 3 : fonctions complémentaires
-- Éjecter toutes les images disque.
-- Éjecter tous les disques externes.
-- Ajouter les réglages et le lancement à la connexion.
-- Vérifier l’accessibilité.
+Phase 1: foundation
 
-Phase 4 : installation locale
-- Assembler le bundle.
-- Ajouter les scripts de build et d’installation.
-- Vérifier le fonctionnement de l’application installée.
+- Initialize the project.
+- Obtain a reproducible build.
+- Display the icon and its menu.
+- Validate mouse gestures.
+- Display a read-only inventory.
 
-Phase 5 : distribution
-- Préparer le tap et le cask.
-- Configurer les releases.
-- Ajouter signature et notarisation selon les moyens disponibles.
-- Tester une installation Homebrew complète.
+Phase 2: primary functionality
 
-## 13. Critères de réussite
+- Identify disks.
+- Persist the selection.
+- Implement normal ejection.
+- Add states and errors.
+- Validate using test media.
 
-- Un clic éjecte uniquement les cibles configurées.
-- Le clic droit et Option + clic ouvrent le menu.
-- La sélection survit aux redémarrages et reconnexions.
-- Toutes les images disque peuvent être éjectées par une action dédiée.
-- Aucun disque interne ou système n’est ciblé.
-- Un disque occupé produit un résultat explicite sans forçage.
-- Les succès partiels sont distingués des succès complets.
-- L’application reste réactive pendant les opérations.
-- L’installation et la mise à jour Homebrew sont reproductibles.
-- Les limites de validation sont documentées.
+Phase 3: additional functionality
 
-## 14. Consignes de travail
+- Eject all disk images.
+- Eject all external disks.
+- Add settings and launch at login.
+- Verify accessibility.
 
-Commencer par l’inspection du projet et de l’environnement,
-puis implémenter progressivement.
+Phase 4: local installation
 
-Prendre les décisions techniques courantes de manière autonome.
-Ne demander que les informations réellement bloquantes.
+- Assemble the bundle.
+- Add build and installation scripts.
+- Verify the installed application works.
 
-Ne pas éjecter le disque de sauvegarde réel de l’utilisateur
-sans son accord explicite pour le test.
+Phase 5: distribution
 
-Respecter les instructions locales et les conventions Git.
-Ne jamais utiliser le caractère em dash.
-Ne pas ajouter de Co-Authored-By ni de mention de génération
-automatique dans les commits, le code ou la documentation.
+- Prepare the tap and cask.
+- Configure releases.
+- Add signing and notarization according to available resources.
+- Test a complete Homebrew installation.
 
-À chaque étape, distinguer :
-- Ce qui est implémenté.
-- Ce qui est testé.
-- Ce qui reste à vérifier.
-- Ce qui dépend d’un accès, certificat ou matériel externe.
+## 13. Success criteria
+
+- One click ejects only the configured targets.
+- Right click and Option + click open the menu.
+- The selection survives restarts and reconnections.
+- A dedicated action can eject all disk images.
+- No internal or system disk is targeted.
+- A busy disk produces an explicit result without forced ejection.
+- Partial success is distinguished from complete success.
+- The application remains responsive during operations.
+- Homebrew installation and upgrades are reproducible.
+- Validation limitations are documented.
+
+## 14. Working guidelines
+
+Start by inspecting the project and environment, then implement incrementally.
+
+Make routine technical decisions autonomously. Ask only for information that
+truly blocks progress.
+
+Do not eject the user's real backup drive without explicit permission for that
+test.
+
+Follow local instructions and Git conventions. Never use the em dash character.
+Do not add co-author trailers or automatic generation notices to commits, code,
+or documentation.
+
+At each step, distinguish between:
+
+- What is implemented.
+- What is tested.
+- What still needs verification.
+- What depends on external access, certificates, or hardware.
+
+## 15. Languages and settings
+
+The source code, developer documentation, scripts, and project discussions in the
+repository use English. The interface initially supports English and French.
+
+Provide a language preference in the Settings menu:
+
+- System Default: follow the macOS language preference, with English as fallback.
+- English.
+- Français.
+
+Persist the choice across application restarts and apply changes immediately.
+Keep interface strings in localization resources so that additional languages
+can be contributed without rewriting interface logic. Preserve user-defined disk
+names and mount paths exactly as reported by the system.

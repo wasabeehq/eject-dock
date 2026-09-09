@@ -1,0 +1,17 @@
+/* Interface strings. Keep keys consistent across languages. */
+"status.tooltip" = "EjectDock : inventaire des disques en lecture seule";
+"status.accessibility" = "EjectDock, ouvrir le menu des disques";
+"menu.foundation" = "EjectDock : socle en lecture seule";
+"menu.ejectionPlanned" = "L’éjection sera disponible dans une prochaine phase";
+"inventory.sessionError" = "Impossible d’ouvrir la session Disk Arbitration.";
+"inventory.empty" = "Aucun disque détecté";
+"disk.internal" = "interne, exclu";
+"disk.unclassified" = "type à qualifier";
+"disk.notMounted" = "Non monté";
+"menu.about" = "À propos d’EjectDock";
+"menu.quit" = "Quitter EjectDock";
+"menu.settings" = "Réglages";
+"settings.language" = "Langue";
+"language.system" = "Langue du système";
+"about.description" = "Un utilitaire de barre de menus pour éjecter les disques d’une station d’accueil. Cette version propose un inventaire en lecture seule.\n\nProjet open source sous licence MIT.";
+"button.ok" = "OK";

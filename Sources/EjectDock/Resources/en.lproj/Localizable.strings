@@ -1,0 +1,17 @@
+/* Interface strings. Keep keys consistent across languages. */
+"status.tooltip" = "EjectDock: read-only disk inventory";
+"status.accessibility" = "EjectDock, open the disk menu";
+"menu.foundation" = "EjectDock: read-only foundation";
+"menu.ejectionPlanned" = "Disk ejection is planned for a future phase";
+"inventory.sessionError" = "Unable to open the Disk Arbitration session.";
+"inventory.empty" = "No disks detected";
+"disk.internal" = "internal, excluded";
+"disk.unclassified" = "type not yet classified";
+"disk.notMounted" = "Not mounted";
+"menu.about" = "About EjectDock";
+"menu.quit" = "Quit EjectDock";
+"menu.settings" = "Settings";
+"settings.language" = "Language";
+"language.system" = "System Default";
+"about.description" = "A menu bar utility for ejecting dock drives. This version provides a read-only disk inventory.\n\nOpen source under the MIT license.";
+"button.ok" = "OK";

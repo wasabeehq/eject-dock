@@ -7,13 +7,13 @@ final class DiskInventory {
     private var session: DASession?
     private var records: [String: ObservedVolume] = [:]
     var onChange: (() -> Void)?
-    private(set) var error: String?
+    private(set) var errorKey: String?
     var disks: [ObservedDisk] { InventoryGrouping.group(Array(records.values)) }
 
     func start() {
         guard session == nil else { return }
         guard let session = DASessionCreate(kCFAllocatorDefault) else {
-            error = "Impossible d’ouvrir la session Disk Arbitration."
+            errorKey = "inventory.sessionError"
             onChange?()
             return
         }
