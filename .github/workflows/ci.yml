@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test (${{ matrix.runner }})
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [macos-15, macos-15-intel]
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate version metadata
+        run: ./scripts/check-version.sh
+      - name: Run tests
+        run: ./scripts/test.sh
+
+  package:
+    name: Universal bundle
+    needs: test
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate application icon generation
+        run: |
+          ./scripts/generate-icon.swift "$RUNNER_TEMP/AppIcon.icns"
+          iconutil -c iconset "$RUNNER_TEMP/AppIcon.icns" -o "$RUNNER_TEMP/AppIcon.iconset"
+          test -f "$RUNNER_TEMP/AppIcon.iconset/icon_512x512@2x.png"
+      - name: Build universal local archive
+        env:
+          EJECTDOCK_ARCHS: universal
+          EJECTDOCK_OUTPUT_DIR: ${{ runner.temp }}/ejectdock-output
+          EJECTDOCK_SCRATCH_PATH: ${{ runner.temp }}/ejectdock-build
+        run: ./scripts/archive.sh
+      - name: Verify universal archive
+        run: |
+          version=$(tr -d '[:space:]' < VERSION)
+          ./scripts/verify-archive.sh "${{ runner.temp }}/ejectdock-output/EjectDock-$version-universal-local.zip"

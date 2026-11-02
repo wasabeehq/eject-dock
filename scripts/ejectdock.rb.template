@@ -1,0 +1,15 @@
+cask "ejectdock" do
+  version "__VERSION__"
+  sha256 "__SHA256__"
+
+  url "__URL__"
+  name "EjectDock"
+  desc "Eject selected external disks from the macOS menu bar"
+  homepage "https://github.com/wasabeehq/eject-dock"
+
+  depends_on macos: ">= :ventura"
+
+  app "EjectDock.app"
+
+  zap trash: "~/Library/Preferences/fr.leo.ejectdock.plist"
+end

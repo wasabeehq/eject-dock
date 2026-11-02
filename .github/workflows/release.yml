@@ -1,0 +1,95 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing version tag, for example v1.0.0
+        required: true
+        type: string
+      publish_release:
+        description: Publish the verified archive to GitHub Releases
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag }}
+      - name: Validate tag and version metadata
+        env:
+          REQUESTED_TAG: ${{ inputs.tag }}
+        run: ./scripts/check-version.sh "$REQUESTED_TAG"
+      - name: Run tests
+        run: ./scripts/test.sh
+      - name: Import Developer ID certificate
+        env:
+          CERTIFICATE_BASE64: ${{ secrets.DEVELOPER_ID_CERTIFICATE_BASE64 }}
+          CERTIFICATE_PASSWORD: ${{ secrets.DEVELOPER_ID_CERTIFICATE_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.BUILD_KEYCHAIN_PASSWORD }}
+        run: |
+          certificate_path="$RUNNER_TEMP/developer-id.p12"
+          keychain_path="$RUNNER_TEMP/ejectdock-signing.keychain-db"
+          printf '%s' "$CERTIFICATE_BASE64" | base64 --decode > "$certificate_path"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$keychain_path"
+          security set-keychain-settings -lut 21600 "$keychain_path"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$keychain_path"
+          security import "$certificate_path" -P "$CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k "$keychain_path"
+          security list-keychain -d user -s "$keychain_path"
+          security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" "$keychain_path"
+      - name: Build, sign, notarize, and verify
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+          DEVELOPER_ID_APPLICATION: ${{ secrets.DEVELOPER_ID_APPLICATION }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          EJECTDOCK_OUTPUT_DIR: ${{ runner.temp }}/ejectdock-output
+          EJECTDOCK_SCRATCH_PATH: ${{ runner.temp }}/ejectdock-build
+        run: ./scripts/release.sh
+      - name: Upload verified archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: EjectDock-${{ inputs.tag }}-universal
+          path: |
+            ${{ runner.temp }}/ejectdock-output/EjectDock-*-universal.zip
+            ${{ runner.temp }}/ejectdock-output/EjectDock-*-universal.zip.sha256
+          if-no-files-found: error
+      - name: Remove signing material
+        if: always()
+        run: |
+          security delete-keychain "$RUNNER_TEMP/ejectdock-signing.keychain-db" 2>/dev/null || true
+          rm -f "$RUNNER_TEMP/developer-id.p12"
+
+  publish:
+    if: ${{ inputs.publish_release }}
+    needs: package
+    runs-on: macos-15
+    permissions:
+      contents: write
+    steps:
+      - name: Download verified archive
+        uses: actions/download-artifact@v4
+        with:
+          name: EjectDock-${{ inputs.tag }}-universal
+          path: ${{ runner.temp }}/ejectdock-output
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          REQUESTED_TAG: ${{ inputs.tag }}
+        run: |
+          version="${REQUESTED_TAG#v}"
+          gh release create "$REQUESTED_TAG" \
+            "$RUNNER_TEMP/ejectdock-output/EjectDock-$version-universal.zip" \
+            "$RUNNER_TEMP/ejectdock-output/EjectDock-$version-universal.zip.sha256" \
+            --verify-tag \
+            --generate-notes \
+            --title "EjectDock $version"
