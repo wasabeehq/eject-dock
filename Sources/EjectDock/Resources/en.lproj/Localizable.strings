@@ -1,17 +1,97 @@
 /* Interface strings. Keep keys consistent across languages. */
-"status.tooltip" = "EjectDock: read-only disk inventory";
-"status.accessibility" = "EjectDock, open the disk menu";
-"menu.foundation" = "EjectDock: read-only foundation";
-"menu.ejectionPlanned" = "Disk ejection is planned for a future phase";
-"inventory.sessionError" = "Unable to open the Disk Arbitration session.";
-"inventory.empty" = "No disks detected";
-"disk.internal" = "internal, excluded";
-"disk.unclassified" = "type not yet classified";
-"disk.notMounted" = "Not mounted";
+"status.ready" = "Ready to unmount disks";
+"status.refreshing" = "Updating the disk list...";
+"status.noSelectedConnected" = "No selected disks are connected";
+"status.noDockConnected" = "The selected dock is not connected";
+"status.awaitingConfirmation" = "Waiting for system confirmation...";
+"status.ejecting" = "Unmounting %ld target(s)...";
+"status.selectedEjected" = "Selected disks unmounted";
+"status.allExternalEjected" = "Eligible external disks unmounted";
+"status.allImagesEjected" = "Mounted disk images ejected";
+"status.oneEjected" = "%@ unmounted";
+"status.partial" = "%ld of %ld targets unmounted";
+"status.noneEjected" = "No disks were unmounted";
+"status.loginItemError" = "Launch at login could not be changed: %@";
+"status.dockReady" = "You can unplug your dock.";
+"status.dockFailed" = "The dock could not be safely unmounted.";
+"status.dockReadinessBlocked" = "Dock readiness could not be confirmed";
+
+"menu.ejectSelected" = "Unmount Selected Disks";
+"menu.ejectDock" = "Unmount Dock";
+"menu.ejectAllExternal" = "Unmount All External Disks";
+"menu.ejectAllImages" = "Eject All Disk Images";
+"menu.externalDisks" = "External Disks";
+"menu.diskImages" = "Disk Images";
 "menu.about" = "About EjectDock";
 "menu.quit" = "Quit EjectDock";
 "menu.settings" = "Settings";
+
+"inventory.sessionError" = "Unable to open the Disk Arbitration session.";
+"inventory.refreshError" = "Unable to update the disk list.";
+"inventory.refreshing" = "Updating the disk list...";
+"inventory.noExternalDisks" = "No external disks detected";
+"inventory.noDiskImages" = "No mounted disk images detected";
+"inventory.unknown" = "Unsupported or unknown disk type";
+"inventory.internal" = "Internal disk, excluded";
+"inventory.system" = "System media, excluded";
+"inventory.topology" = "Unsupported or ambiguous disk topology";
+"inventory.identity" = "No reliable persistent identity";
+"inventory.ambiguous" = "Persistent identity collision";
+
+"disk.connectedReady" = "Connected and ready to unmount";
+"disk.disconnected" = "Disconnected, selection remembered";
+"disk.connectedShort" = "connected";
+"disk.disconnectedShort" = "disconnected";
+"disk.notMounted" = "Not mounted";
+"disk.noVolumes" = "No mounted volumes";
+"disk.ejectNow" = "Unmount Now";
+"disk.includeInPrimary" = "Include in Left-Click Unmount";
+"disk.removeFromPrimary" = "Remove from Left-Click Unmount";
+
+"settings.launchAtLogin" = "Launch at Login";
+"settings.loginApprovalRequired" = "Approval required in System Settings";
+"settings.loginUnavailable" = "Launch at login is unavailable for this copy";
+"settings.includeDiskImages" = "Include Disk Images in Left-Click Unmount";
+"settings.selectedDisks" = "Selected Disks";
+"settings.noSelectedDisks" = "No selected disks";
 "settings.language" = "Language";
 "language.system" = "System Default";
-"about.description" = "A menu bar utility for ejecting dock drives. This version provides a read-only disk inventory.\n\nOpen source under the MIT license.";
+
+"result.working" = "in progress";
+"result.success" = "unmounted";
+"result.unavailable" = "disconnected before the operation";
+"result.rejected" = "no longer eligible";
+"result.pending" = "waiting for system confirmation";
+"result.failed" = "failed: %@";
+"result.dockReadinessBlocked" = "dock disks were unmounted, but safe removal cannot be confirmed while external storage remains mounted: %@";
+
+"about.description" = "EjectDock unmounts selected external disks, every current disk on a chosen dock, and disk images from the menu bar. It remembers persistent choices across restarts and reconnections, reports each result in the panel, and never forces an unmount.\n\nOpen source under the MIT license.";
 "button.ok" = "OK";
+
+"status.incompleteEjection" = "Unmount incomplete";
+"native.stage.volumeUnmount" = "Volume unmount";
+"native.stage.wholeUnmount" = "Whole-disk unmount";
+"native.stage.eject" = "Physical disk unmount";
+"native.busy" = "disk busy (code %ld)";
+"native.error" = "system error (code %ld)";
+"native.stageFailed" = "%@: %@";
+"native.volumesUnmounted" = "Volumes unmounted; unmount not confirmed. %@";
+"native.partialUnmount" = "%ld of %ld volumes unmounted; unmount not confirmed. %@";
+"native.verificationFailed" = "Unmount could not be confirmed: a volume or snapshot may still be mounted. Refresh and retry.";
+
+"panel.subtitle" = "Choose what your left click unmounts";
+"panel.leftClick" = "Left click";
+"panel.refresh" = "Refresh disks";
+"panel.noDisks" = "Connect an external disk to choose it here.";
+"panel.mounted" = "Mounted";
+"panel.ejectImage" = "Eject image";
+"panel.expanded" = "Expanded";
+"panel.collapsed" = "Collapsed";
+"panel.primaryAction" = "Left-Click Action";
+"panel.selectedDisksTarget" = "Selected disks";
+"panel.selectedDisksTargetDetail" = "Unmount the connected disks enabled below";
+"panel.noDocks" = "No connected dock was identified.";
+"panel.dockConnected" = "%ld connected disk(s)";
+"panel.dockDisconnected" = "Disconnected, left-click choice remembered";
+"panel.dockUnavailable" = "Dock unavailable for safe unmount";
+"panel.primarySelected" = "Selected";

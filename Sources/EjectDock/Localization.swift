@@ -19,4 +19,8 @@ enum Localization {
         let bundle = path.flatMap(Bundle.init(path:)) ?? resources
         return bundle.localizedString(forKey: key, value: nil, table: nil)
     }
+
+    static func format(_ key: String, _ arguments: CVarArg...) -> String {
+        String(format: text(key), locale: Locale.current, arguments: arguments)
+    }
 }

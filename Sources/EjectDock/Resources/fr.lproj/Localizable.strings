@@ -1,17 +1,97 @@
 /* Interface strings. Keep keys consistent across languages. */
-"status.tooltip" = "EjectDock : inventaire des disques en lecture seule";
-"status.accessibility" = "EjectDock, ouvrir le menu des disques";
-"menu.foundation" = "EjectDock : socle en lecture seule";
-"menu.ejectionPlanned" = "L’éjection sera disponible dans une prochaine phase";
-"inventory.sessionError" = "Impossible d’ouvrir la session Disk Arbitration.";
-"inventory.empty" = "Aucun disque détecté";
-"disk.internal" = "interne, exclu";
-"disk.unclassified" = "type à qualifier";
-"disk.notMounted" = "Non monté";
+"status.ready" = "Prêt à démonter les disques";
+"status.refreshing" = "Actualisation de la liste des disques...";
+"status.noSelectedConnected" = "Aucun disque sélectionné n’est connecté";
+"status.noDockConnected" = "Le dock sélectionné n’est pas connecté";
+"status.awaitingConfirmation" = "En attente de la confirmation du système...";
+"status.ejecting" = "Démontage de %ld cible(s)...";
+"status.selectedEjected" = "Disques sélectionnés démontés";
+"status.allExternalEjected" = "Disques externes éligibles démontés";
+"status.allImagesEjected" = "Images disque montées éjectées";
+"status.oneEjected" = "%@ démonté";
+"status.partial" = "%ld cible(s) démontée(s) sur %ld";
+"status.noneEjected" = "Aucun disque n’a été démonté";
+"status.loginItemError" = "Impossible de modifier le lancement à la connexion : %@";
+"status.dockReady" = "Vous pouvez débrancher votre dock.";
+"status.dockFailed" = "Le dock n’a pas pu être démonté en toute sécurité.";
+"status.dockReadinessBlocked" = "Impossible de confirmer que le dock peut être débranché";
+
+"menu.ejectSelected" = "Démonter les disques sélectionnés";
+"menu.ejectDock" = "Démonter le dock";
+"menu.ejectAllExternal" = "Démonter tous les disques externes";
+"menu.ejectAllImages" = "Éjecter toutes les images disque";
+"menu.externalDisks" = "Disques externes";
+"menu.diskImages" = "Images disque";
 "menu.about" = "À propos d’EjectDock";
 "menu.quit" = "Quitter EjectDock";
 "menu.settings" = "Réglages";
+
+"inventory.sessionError" = "Impossible d’ouvrir la session Disk Arbitration.";
+"inventory.refreshError" = "Impossible d’actualiser la liste des disques.";
+"inventory.refreshing" = "Actualisation de la liste des disques...";
+"inventory.noExternalDisks" = "Aucun disque externe détecté";
+"inventory.noDiskImages" = "Aucune image disque montée détectée";
+"inventory.unknown" = "Type de disque inconnu ou non pris en charge";
+"inventory.internal" = "Disque interne exclu";
+"inventory.system" = "Support système exclu";
+"inventory.topology" = "Topologie de disque ambiguë ou non prise en charge";
+"inventory.identity" = "Aucune identité persistante fiable";
+"inventory.ambiguous" = "Collision d’identité persistante";
+
+"disk.connectedReady" = "Connecté et prêt à être démonté";
+"disk.disconnected" = "Déconnecté, sélection mémorisée";
+"disk.connectedShort" = "connecté";
+"disk.disconnectedShort" = "déconnecté";
+"disk.notMounted" = "Non monté";
+"disk.noVolumes" = "Aucun volume monté";
+"disk.ejectNow" = "Démonter maintenant";
+"disk.includeInPrimary" = "Inclure dans le démontage au clic gauche";
+"disk.removeFromPrimary" = "Retirer du démontage au clic gauche";
+
+"settings.launchAtLogin" = "Lancer à la connexion";
+"settings.loginApprovalRequired" = "Autorisation requise dans Réglages Système";
+"settings.loginUnavailable" = "Lancement à la connexion indisponible pour cette copie";
+"settings.includeDiskImages" = "Inclure les images disque dans le démontage au clic gauche";
+"settings.selectedDisks" = "Disques sélectionnés";
+"settings.noSelectedDisks" = "Aucun disque sélectionné";
 "settings.language" = "Langue";
 "language.system" = "Langue du système";
-"about.description" = "Un utilitaire de barre de menus pour éjecter les disques d’une station d’accueil. Cette version propose un inventaire en lecture seule.\n\nProjet open source sous licence MIT.";
+
+"result.working" = "opération en cours";
+"result.success" = "démonté";
+"result.unavailable" = "déconnecté avant l’opération";
+"result.rejected" = "n’est plus éligible";
+"result.pending" = "en attente de la confirmation du système";
+"result.failed" = "échec : %@";
+"result.dockReadinessBlocked" = "les disques du dock ont été démontés, mais son débranchement sûr ne peut pas être confirmé tant qu’un stockage externe reste monté : %@";
+
+"about.description" = "EjectDock démonte les disques externes sélectionnés, tous les disques actuellement connectés à un dock choisi et les images disque depuis la barre de menus. L’application mémorise les choix persistants après un redémarrage ou une reconnexion, affiche le résultat de chaque opération dans le panneau et ne force jamais un démontage.\n\nProjet open source sous licence MIT.";
 "button.ok" = "OK";
+
+"status.incompleteEjection" = "Démontage incomplet";
+"native.stage.volumeUnmount" = "Démontage du volume";
+"native.stage.wholeUnmount" = "Démontage du disque entier";
+"native.stage.eject" = "Éjection du disque physique";
+"native.busy" = "disque occupé (code %ld)";
+"native.error" = "erreur système (code %ld)";
+"native.stageFailed" = "%@ : %@";
+"native.volumesUnmounted" = "Volumes démontés ; démontage non confirmé. %@";
+"native.partialUnmount" = "%ld volume(s) démonté(s) sur %ld ; démontage non confirmé. %@";
+"native.verificationFailed" = "Démontage non confirmé : un volume ou un instantané peut encore être monté. Actualisez puis réessayez.";
+
+"panel.subtitle" = "Choisissez les disques du clic gauche";
+"panel.leftClick" = "Clic gauche";
+"panel.refresh" = "Actualiser les disques";
+"panel.noDisks" = "Connectez un disque externe pour le choisir ici.";
+"panel.mounted" = "Monté";
+"panel.ejectImage" = "Éjecter l’image";
+"panel.expanded" = "Développé";
+"panel.collapsed" = "Replié";
+"panel.primaryAction" = "Action du clic gauche";
+"panel.selectedDisksTarget" = "Disques sélectionnés";
+"panel.selectedDisksTargetDetail" = "Démonter les disques connectés activés ci-dessous";
+"panel.noDocks" = "Aucun dock connecté n’a été identifié.";
+"panel.dockConnected" = "%ld disque(s) connecté(s)";
+"panel.dockDisconnected" = "Déconnecté, choix du clic gauche mémorisé";
+"panel.dockUnavailable" = "Dock indisponible pour un démontage sûr";
+"panel.primarySelected" = "Sélectionné";
