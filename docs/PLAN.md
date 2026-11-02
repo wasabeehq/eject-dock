@@ -1,5 +1,10 @@
 # EjectDock project
 
+Current scope decision (September 9, 2026): physical targets are unmounted only,
+with post-operation verification. Physical ejection is not required and must not
+be requested. This supersedes the physical-ejection steps in the original plan
+below. Disk images retain their detach action.
+
 Create a small macOS application that ejects preselected disks with one click
 before unplugging a docking station.
 

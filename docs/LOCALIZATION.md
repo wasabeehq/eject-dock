@@ -34,6 +34,11 @@ and menu rendering. Escape quotes and newlines using the `.strings` format.
 
 ## Settings scope
 
-Language selection is the first implemented setting. Selected disks, launch at
-login, and inclusion of disk images remain planned features. Keep these settings
+Settings include language, saved disk selection, launch at login, and optional
+disk-image inclusion in the primary action. Image inclusion defaults to off.
+Saved physical disks remain removable while disconnected. Keep these settings
 in the menu until a dedicated window provides a clear usability benefit.
+
+Use `Localization.format(_:_:)` for resource strings with arguments. Preserve
+matching format specifiers in every translation. Native system error details
+retain the wording supplied by macOS inside a localized result label.
