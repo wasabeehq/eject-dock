@@ -9,6 +9,6 @@ let package = Package(
     targets: [
         .target(name: "EjectDockCore"),
         .executableTarget(name: "EjectDock", dependencies: ["EjectDockCore"], resources: [.process("Resources")]),
-        .testTarget(name: "EjectDockCoreTests", dependencies: ["EjectDockCore"])
+        .testTarget(name: "EjectDockCoreTests", dependencies: ["EjectDockCore"], resources: [.copy("Fixtures")])
     ]
 )
