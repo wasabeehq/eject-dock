@@ -16,16 +16,23 @@ public enum DockTopology {
             let members = memberBSDNames.flatMap { physicalByBSD[$0] ?? [] }
             let memberIDs = Array(Set(members.map(\.stableID))).sorted()
             let serials = Array(Set(dock.serialNumbers.filter { !$0.isEmpty })).sorted()
-            let persistence: DockPersistence = serials.count == 1 &&
+            let serialIdentity = serials.count == 1 &&
                 dock.serialNumbers.count == boundaries.count && !dock.vendorProductIDs.isEmpty
-                ? .persistent : .sessionOnly
+            let container = serialIdentity ? nil : normalizedContainerID(dock.containerID)
+            let persistence: DockPersistence = serialIdentity || container != nil ? .persistent : .sessionOnly
             let identityParts: [String]
-            if persistence == .persistent {
+            let namespace: String
+            if serialIdentity {
                 identityParts = serials + dock.vendorProductIDs.sorted()
+                namespace = ""
+            } else if let container {
+                identityParts = [container]
+                namespace = "container:"
             } else {
                 identityParts = boundaries.map(String.init)
+                namespace = ""
             }
-            let stableID = "dock:" + persistence.rawValue + ":" + digest(identityParts)
+            let stableID = "dock:" + persistence.rawValue + ":" + namespace + digest(identityParts)
             var rejection: String?
             if !dock.complete || boundaries.isEmpty || memberBSDNames.isEmpty || members.count != memberBSDNames.count {
                 rejection = "inventory.topology"
@@ -87,6 +94,13 @@ public enum DockTopology {
             $0.hasMountedSnapshots || $0.volumes.contains { $0.mountPath != nil }
         }.map(\.name).sorted()
         return dockBlockers.isEmpty ? .ready : .blocked(dockBlockers)
+    }
+
+    /// Returns a lowercased UUID string, or nil when absent, malformed or all zeros.
+    private static func normalizedContainerID(_ value: String?) -> String? {
+        guard let value, let uuid = UUID(uuidString: value.trimmingCharacters(in: .whitespaces)),
+              uuid.uuidString != "00000000-0000-0000-0000-000000000000" else { return nil }
+        return uuid.uuidString.lowercased()
     }
 
     private static func digest(_ parts: [String]) -> String {

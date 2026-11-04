@@ -120,6 +120,11 @@ public final class PreferencesStore {
         refreshMetadata(from: snapshot.targets)
         guard case .dock(let saved) = primaryActionMode else { return }
         let matches = snapshot.docks.filter { $0.stableID == saved.stableID }
+        if matches.isEmpty, sessionDock?.stableID == saved.stableID {
+            // A session-only identity is derived from entry IDs and can never return.
+            sessionDock = nil
+            return
+        }
         guard matches.count == 1, let current = matches.first, current.selectable else { return }
         if current.persistence == .sessionOnly {
             sessionDock = SavedDock(current)

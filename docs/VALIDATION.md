@@ -138,7 +138,7 @@ disk operation was performed for this interface change.
 
 ## Dock target and transient result (2026-09-23)
 
-The panel can choose the saved disk set or one discovered dock as the left-click
+The panel can choose the saved disk set or one discovered dock as the right-click
 target. Dock membership is resolved from a fresh inventory during the operation,
 and the dock result is successful only after another complete inventory confirms
 that every current member has no mounted volume or snapshot. Empty, missing,
@@ -170,3 +170,19 @@ and produced `dist/EjectDock.app`.
 Dock discovery on real hardware, dynamic membership during an operation,
 multi-screen placement, VoiceOver behavior, and the final installed appearance
 still require manual validation. No physical disk was unmounted for this change.
+
+## Dock identity across ports
+
+Docks without a USB serial number now use the hardware `kUSBContainerID` as a
+persistent identity (normalized lowercase UUID, in a separate `container:`
+namespace), so the identity no longer depends on IORegistry entry IDs, the
+port, or both hub halves enumerating. Serial-based identity is unchanged, and
+docks without a valid container ID stay session-only. A session-only selection
+is cleared once its dock disappears. Two docks sharing a container ID are both
+rejected as ambiguous. This is implemented and unit tested.
+
+The hardware check is manual and NOT yet performed: unplug the dock, replug it
+on another USB-C or Thunderbolt port, confirm with
+`ioreg -p IOService -c IOUSBHostDevice -r -l -w0 | grep kUSBContainerID` that
+the top hub container ID is unchanged, and confirm that the saved dock
+reattaches without a duplicate entry in the panel.

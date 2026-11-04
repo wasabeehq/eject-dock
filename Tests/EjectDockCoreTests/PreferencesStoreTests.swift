@@ -135,4 +135,23 @@ final class PreferencesStoreTests: XCTestCase {
         XCTAssertEqual(store.primaryActionMode, .dock(SavedDock(dock)))
         XCTAssertEqual(PreferencesStore(defaults: defaults).primaryActionMode, .selectedDisks)
     }
+
+    func testRefreshDropsVanishedSessionDockButKeepsDisconnectedPersistentDock() {
+        let (defaults, suite) = defaults()
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let store = PreferencesStore(defaults: defaults)
+        let session = DockTarget(stableID: "dock:sessionOnly:1", name: "USB Dock", persistence: .sessionOnly,
+                                 memberTargetIDs: ["A"], boundaryIDs: [1])
+        store.selectDock(session)
+        store.refreshMetadata(from: InventorySnapshot(targets: [], docks: [session]))
+        XCTAssertEqual(store.primaryActionMode, .dock(SavedDock(session)))
+        store.refreshMetadata(from: InventorySnapshot(targets: [], docks: []))
+        XCTAssertEqual(store.primaryActionMode, .selectedDisks)
+
+        let persistent = DockTarget(stableID: "dock:persistent:container:1", name: "USB Dock",
+                                    persistence: .persistent, memberTargetIDs: ["A"], boundaryIDs: [1])
+        store.selectDock(persistent)
+        store.refreshMetadata(from: InventorySnapshot(targets: [], docks: []))
+        XCTAssertEqual(store.primaryActionMode, .dock(SavedDock(persistent)))
+    }
 }
