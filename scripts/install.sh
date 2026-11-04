@@ -32,7 +32,7 @@ version_is_less() {
 
 if [[ -d "$target" ]]; then
   installed_identifier="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$target/Contents/Info.plist" 2>/dev/null || true)"
-  if [[ "$installed_identifier" != "fr.leo.ejectdock" ]]; then
+  if [[ "$installed_identifier" != "fr.wasabee.ejectdock" && "$installed_identifier" != "fr.leo.ejectdock" ]]; then
     echo "Refusing to replace an application with a different bundle identifier at $target." >&2
     exit 1
   fi

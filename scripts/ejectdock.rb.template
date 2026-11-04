@@ -11,5 +11,5 @@ cask "ejectdock" do
 
   app "EjectDock.app"
 
-  zap trash: "~/Library/Preferences/fr.leo.ejectdock.plist"
+  zap trash: "~/Library/Preferences/fr.wasabee.ejectdock.plist"
 end

@@ -189,7 +189,7 @@ private final class PhysicalUnmount {
     private var unmountedVolumes = 0
     private let requestedVolumes: Int
     private var stage: NativeEjectionFailure.Stage = .volumeUnmount
-    private let logger = Logger(subsystem: "fr.leo.ejectdock", category: "ejection")
+    private let logger = Logger(subsystem: "fr.wasabee.ejectdock", category: "ejection")
 
     init(disk: DADisk, volumes: [DADisk], witnesses: [DADisk], completion: @escaping (EjectionOutcome) -> Void) {
         self.disk = disk

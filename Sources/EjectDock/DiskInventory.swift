@@ -5,7 +5,7 @@ import EjectDockCore
 /// Disk Arbitration triggers coalesced, read-only snapshots on a background queue.
 final class DiskInventory {
     private var session: DASession?
-    private let worker = DispatchQueue(label: "app.ejectdock.inventory", qos: .userInitiated)
+    private let worker = DispatchQueue(label: "fr.wasabee.ejectdock.inventory", qos: .userInitiated)
     private var pendingRefresh: DispatchWorkItem?
     private var completions: [(Result<InventorySnapshot, Error>) -> Void] = []
     private var needsRefresh = false

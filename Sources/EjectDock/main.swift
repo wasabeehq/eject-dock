@@ -9,7 +9,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private lazy var ejectionService = EjectionService(inventory: inventory)
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        let otherInstances = NSRunningApplication.runningApplications(withBundleIdentifier: "fr.leo.ejectdock")
+        let otherInstances = NSRunningApplication.runningApplications(withBundleIdentifier: Bundle.main.bundleIdentifier ?? "fr.wasabee.ejectdock")
             .filter { $0.processIdentifier != ProcessInfo.processInfo.processIdentifier && !$0.isTerminated }
         if !otherInstances.isEmpty {
             NSApp.terminate(nil)
@@ -36,6 +36,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
 }
+
+PreferencesMigration.migrateLegacyDomains(currentBundleIdentifier: Bundle.main.bundleIdentifier)
 
 if CommandLine.arguments.contains("--preview-toast") {
     runToastPreviewMode()
