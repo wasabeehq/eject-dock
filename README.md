@@ -94,6 +94,9 @@ universal build (Apple Silicon and Intel, macOS 13 or later):
 brew install --cask wasabeehq/tools/ejectdock
 ```
 
+If Homebrew refuses to load the cask from an untrusted tap, trust it once with
+`brew trust wasabeehq/tools` and run the install again.
+
 The build is not notarized by Apple, so Gatekeeper blocks the first launch. Approve
 it once, either by opening EjectDock and then choosing System Settings > Privacy &
 Security > Open Anyway, or by running:
