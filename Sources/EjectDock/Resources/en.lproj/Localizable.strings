@@ -36,7 +36,7 @@
 "inventory.system" = "System media, excluded";
 "inventory.topology" = "Unsupported or ambiguous disk topology";
 "inventory.identity" = "No reliable persistent identity";
-"inventory.ambiguous" = "Persistent identity collision";
+"inventory.ambiguous" = "Duplicate identity, unmount disabled";
 
 "disk.connectedReady" = "Connected and ready to unmount";
 "disk.disconnected" = "Disconnected, selection remembered";
@@ -45,13 +45,13 @@
 "disk.notMounted" = "Not mounted";
 "disk.noVolumes" = "No mounted volumes";
 "disk.ejectNow" = "Unmount Now";
-"disk.includeInPrimary" = "Include in Left-Click Unmount";
-"disk.removeFromPrimary" = "Remove from Left-Click Unmount";
+"disk.includeInPrimary" = "Include in Right-Click Unmount";
+"disk.removeFromPrimary" = "Remove from Right-Click Unmount";
 
 "settings.launchAtLogin" = "Launch at Login";
 "settings.loginApprovalRequired" = "Approval required in System Settings";
 "settings.loginUnavailable" = "Launch at login is unavailable for this copy";
-"settings.includeDiskImages" = "Include Disk Images in Left-Click Unmount";
+"settings.includeDiskImages" = "Include Disk Images in Right-Click Unmount";
 "settings.selectedDisks" = "Selected Disks";
 "settings.noSelectedDisks" = "No selected disks";
 "settings.language" = "Language";
@@ -79,19 +79,19 @@
 "native.partialUnmount" = "%ld of %ld volumes unmounted; unmount not confirmed. %@";
 "native.verificationFailed" = "Unmount could not be confirmed: a volume or snapshot may still be mounted. Refresh and retry.";
 
-"panel.subtitle" = "Choose what your left click unmounts";
-"panel.leftClick" = "Left click";
+"panel.subtitle" = "Choose what your right click unmounts";
+"panel.rightClick" = "Right click";
 "panel.refresh" = "Refresh disks";
 "panel.noDisks" = "Connect an external disk to choose it here.";
 "panel.mounted" = "Mounted";
 "panel.ejectImage" = "Eject image";
 "panel.expanded" = "Expanded";
 "panel.collapsed" = "Collapsed";
-"panel.primaryAction" = "Left-Click Action";
+"panel.primaryAction" = "Right-Click Action";
 "panel.selectedDisksTarget" = "Selected disks";
 "panel.selectedDisksTargetDetail" = "Unmount the connected disks enabled below";
 "panel.noDocks" = "No connected dock was identified.";
 "panel.dockConnected" = "%ld connected disk(s)";
-"panel.dockDisconnected" = "Disconnected, left-click choice remembered";
+"panel.dockDisconnected" = "Disconnected, right-click choice remembered";
 "panel.dockUnavailable" = "Dock unavailable for safe unmount";
 "panel.primarySelected" = "Selected";

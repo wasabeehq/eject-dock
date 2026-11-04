@@ -36,7 +36,7 @@
 "inventory.system" = "Support système exclu";
 "inventory.topology" = "Topologie de disque ambiguë ou non prise en charge";
 "inventory.identity" = "Aucune identité persistante fiable";
-"inventory.ambiguous" = "Collision d’identité persistante";
+"inventory.ambiguous" = "Identité en double, démontage désactivé";
 
 "disk.connectedReady" = "Connecté et prêt à être démonté";
 "disk.disconnected" = "Déconnecté, sélection mémorisée";
@@ -45,13 +45,13 @@
 "disk.notMounted" = "Non monté";
 "disk.noVolumes" = "Aucun volume monté";
 "disk.ejectNow" = "Démonter maintenant";
-"disk.includeInPrimary" = "Inclure dans le démontage au clic gauche";
-"disk.removeFromPrimary" = "Retirer du démontage au clic gauche";
+"disk.includeInPrimary" = "Inclure dans le démontage au clic droit";
+"disk.removeFromPrimary" = "Retirer du démontage au clic droit";
 
 "settings.launchAtLogin" = "Lancer à la connexion";
 "settings.loginApprovalRequired" = "Autorisation requise dans Réglages Système";
 "settings.loginUnavailable" = "Lancement à la connexion indisponible pour cette copie";
-"settings.includeDiskImages" = "Inclure les images disque dans le démontage au clic gauche";
+"settings.includeDiskImages" = "Inclure les images disque dans le démontage au clic droit";
 "settings.selectedDisks" = "Disques sélectionnés";
 "settings.noSelectedDisks" = "Aucun disque sélectionné";
 "settings.language" = "Langue";
@@ -79,19 +79,19 @@
 "native.partialUnmount" = "%ld volume(s) démonté(s) sur %ld ; démontage non confirmé. %@";
 "native.verificationFailed" = "Démontage non confirmé : un volume ou un instantané peut encore être monté. Actualisez puis réessayez.";
 
-"panel.subtitle" = "Choisissez les disques du clic gauche";
-"panel.leftClick" = "Clic gauche";
+"panel.subtitle" = "Choisissez les disques du clic droit";
+"panel.rightClick" = "Clic droit";
 "panel.refresh" = "Actualiser les disques";
 "panel.noDisks" = "Connectez un disque externe pour le choisir ici.";
 "panel.mounted" = "Monté";
 "panel.ejectImage" = "Éjecter l’image";
 "panel.expanded" = "Développé";
 "panel.collapsed" = "Replié";
-"panel.primaryAction" = "Action du clic gauche";
+"panel.primaryAction" = "Action du clic droit";
 "panel.selectedDisksTarget" = "Disques sélectionnés";
 "panel.selectedDisksTargetDetail" = "Démonter les disques connectés activés ci-dessous";
 "panel.noDocks" = "Aucun dock connecté n’a été identifié.";
 "panel.dockConnected" = "%ld disque(s) connecté(s)";
-"panel.dockDisconnected" = "Déconnecté, choix du clic gauche mémorisé";
+"panel.dockDisconnected" = "Déconnecté, choix du clic droit mémorisé";
 "panel.dockUnavailable" = "Dock indisponible pour un démontage sûr";
 "panel.primarySelected" = "Sélectionné";

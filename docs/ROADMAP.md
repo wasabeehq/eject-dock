@@ -38,7 +38,7 @@
 - [x] Keep the option to include disk images disabled by default.
 - [x] Accessible states: ready, in progress, completed, partial, disconnected.
 - [x] Visible confirmation without notification permission.
-- [x] Select a proven USB dock subtree as the left-click target and resolve its current disks dynamically.
+- [x] Select a proven USB dock subtree as the right-click target and resolve its current disks dynamically.
 - [x] Show a transient dock result anchored to the menu bar icon.
 
 ## Phase 4: local installation

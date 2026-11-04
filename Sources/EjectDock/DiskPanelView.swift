@@ -33,6 +33,7 @@ final class DiskPanelModel: ObservableObject {
     @Published var images: [DiskPanelRow] = []
     @Published var status = ""
     @Published var results: [String] = []
+    @Published var maxListHeight: CGFloat = 640
     @Published var busy = false
     @Published var warning = false
     @Published var completed = false
@@ -65,6 +66,7 @@ final class DiskPanelModel: ObservableObject {
 struct DiskPanelView: View {
     @ObservedObject var model: DiskPanelModel
     @State private var settingsExpanded = false
+    @State private var listHeight: CGFloat = 0
 
     private func text(_ key: String) -> String { Localization.text(key) }
 
@@ -87,7 +89,7 @@ struct DiskPanelView: View {
                 .help(text("panel.refresh"))
                 .accessibilityLabel(text("panel.refresh"))
             }
-            .padding(18)
+            .padding(.horizontal, 18).padding(.top, 14).padding(.bottom, 10)
 
             HStack(alignment: .top, spacing: 8) {
                 if model.busy || model.refreshing {
@@ -103,7 +105,7 @@ struct DiskPanelView: View {
                 }
                 Spacer(minLength: 0)
             }
-            .padding(.horizontal, 18).padding(.bottom, 14)
+            .padding(.horizontal, 18).padding(.bottom, 10)
 
             Divider()
             ScrollView {
@@ -119,8 +121,8 @@ struct DiskPanelView: View {
                     }
                     Text(text("panel.primaryAction"))
                         .font(.system(size: 12, weight: .semibold))
-                        .padding(.top, 16).padding(.bottom, 8)
-                    VStack(alignment: .leading, spacing: 8) {
+                        .padding(.top, 12).padding(.bottom, 6)
+                    VStack(alignment: .leading, spacing: 6) {
                         primaryActionOption(
                             choice: .selectedDisks,
                             title: text("panel.selectedDisksTarget"),
@@ -142,12 +144,12 @@ struct DiskPanelView: View {
                             .fixedSize(horizontal: false, vertical: true)
                             .padding(.top, 7)
                     }
-                    Divider().padding(.top, 14)
+                    Divider().padding(.top, 10)
                     HStack {
                         Text(text("menu.externalDisks")).font(.system(size: 12, weight: .semibold))
                         Spacer()
-                        Text(text("panel.leftClick")).font(.system(size: 10, weight: .medium)).foregroundStyle(.secondary)
-                    }.padding(.top, 16).padding(.bottom, 8)
+                        Text(text("panel.rightClick")).font(.system(size: 10, weight: .medium)).foregroundStyle(.secondary)
+                    }.padding(.top, 12).padding(.bottom, 2)
                     if model.disks.isEmpty {
                         empty(text("panel.noDisks"))
                     } else {
@@ -156,23 +158,27 @@ struct DiskPanelView: View {
                     HStack {
                         Text(text("menu.diskImages")).font(.system(size: 12, weight: .semibold))
                         Spacer()
-                        Toggle(text("panel.leftClick"), isOn: Binding(get: { model.includeImages }, set: { _ in model.onIncludeImages?() }))
+                        Toggle(text("panel.rightClick"), isOn: Binding(get: { model.includeImages }, set: { _ in model.onIncludeImages?() }))
                             .toggleStyle(.switch).controlSize(.mini)
                             .font(.system(size: 10)).disabled(model.busy)
                             .help(text("settings.includeDiskImages"))
                             .accessibilityLabel(text("settings.includeDiskImages"))
-                    }.padding(.top, 20).padding(.bottom, 8)
+                    }.padding(.top, 14).padding(.bottom, 2)
                     if model.images.isEmpty {
                         empty(text("inventory.noDiskImages"))
                     } else {
                         ForEach(model.images) { row in diskRow(row) }
                         Button(text("menu.ejectAllImages")) { model.onImages?() }
                             .buttonStyle(.link).font(.system(size: 11))
-                            .disabled(!model.canEjectImages).padding(.top, 8)
+                            .disabled(!model.canEjectImages).padding(.top, 6)
                     }
-                }.padding(.horizontal, 18).padding(.bottom, 16)
+                }.padding(.horizontal, 18).padding(.bottom, 12)
+                .background(GeometryReader { proxy in
+                    Color.clear.preference(key: ListHeightKey.self, value: proxy.size.height)
+                })
             }
-            .frame(maxHeight: .infinity)
+            .onPreferenceChange(ListHeightKey.self) { listHeight = $0 }
+            .frame(height: min(max(listHeight, 120), model.maxListHeight))
 
             Divider()
             VStack(spacing: 9) {
@@ -180,13 +186,13 @@ struct DiskPanelView: View {
                     HStack {
                         Image(systemName: "eject")
                         Text(model.primaryActionTitle).fontWeight(.medium)
-                    }.frame(maxWidth: .infinity).padding(.vertical, 3)
+                    }.frame(maxWidth: .infinity).padding(.vertical, 2)
                 }
                 .buttonStyle(.borderedProminent).controlSize(.large)
                 .disabled(!model.canUnmountSelected)
                 Button(text("menu.ejectAllExternal")) { model.onAll?() }
                     .buttonStyle(.link).font(.system(size: 11)).disabled(!model.canUnmountAll)
-            }.padding(16)
+            }.padding(.horizontal, 16).padding(.vertical, 12)
 
             Divider()
             VStack(spacing: 12) {
@@ -220,9 +226,10 @@ struct DiskPanelView: View {
                         }.controlSize(.small)
                     }.font(.system(size: 12))
                 }
-            }.padding(16)
+            }.padding(.horizontal, 16).padding(.vertical, 12)
         }
-        .frame(width: 410, height: 580)
+        .frame(width: 410)
+        .fixedSize(horizontal: false, vertical: true)
         .background(.regularMaterial)
     }
 
@@ -261,12 +268,12 @@ struct DiskPanelView: View {
     private func diskRow(_ row: DiskPanelRow) -> some View {
         HStack(alignment: .center, spacing: 10) {
             Image(systemName: row.image ? "opticaldiscdrive" : "externaldrive")
-                .font(.system(size: 23, weight: .regular))
+                .font(.system(size: 18, weight: .regular))
                 .foregroundStyle(row.disconnected ? Color.secondary : Color.accentColor)
-                .frame(width: 28).accessibilityHidden(true)
-            VStack(alignment: .leading, spacing: 3) {
-                Text(row.name).font(.system(size: 13, weight: .medium)).lineLimit(1).help(row.name)
-                Text(row.subtitle).font(.system(size: 11)).foregroundStyle(.secondary).lineLimit(2)
+                .frame(width: 24).accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 1) {
+                Text(row.name).font(.system(size: 12, weight: .medium)).lineLimit(1).help(row.name)
+                Text(row.subtitle).font(.system(size: 10)).foregroundStyle(.secondary).lineLimit(2)
                 if !row.detail.isEmpty {
                     Text(row.detail).font(.system(size: 10)).foregroundStyle(.secondary)
                         .lineLimit(1).truncationMode(.middle).help(row.detail)
@@ -288,7 +295,12 @@ struct DiskPanelView: View {
                     .accessibilityLabel(row.name + ": " + text("disk.includeInPrimary"))
             }
         }
-        .padding(.vertical, 11)
+        .padding(.vertical, 6)
         .overlay(alignment: .bottom) { Divider() }
     }
+}
+
+private struct ListHeightKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) { value = max(value, nextValue()) }
 }

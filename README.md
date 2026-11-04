@@ -25,12 +25,12 @@ open dist/EjectDock.app
 ```
 
 An eject icon appears in the menu bar, with no permanent Dock icon. When no
-selection is configured, a left click opens the panel. Otherwise it unmounts the
-configured target. The target can be the saved disk selection or an identified
+selection is configured, every click opens the panel. Otherwise a right click
+or Control + click unmounts the configured target. The target can be the saved disk selection or an identified
 USB dock subtree. A dock action resolves every currently connected member of
 that proven subtree at operation time, including disks connected after the
-choice was saved. Right click, Option +
-click, and Control + click open the graphical panel. Each physical disk has a
+choice was saved. A plain left click and
+Option + click always open the graphical panel. Each physical disk has a
 selection toggle, mount status, and a direct unmount button. Saved disconnected
 selections remain visible and can be removed by turning their toggle off. Disk
 images have a separate group with an option to include them in the selected-disk
@@ -87,11 +87,12 @@ dock target. It remains available through the existing per-disk actions.
 
 ## Distribution
 
-The bundle uses the stable identifier `fr.leo.ejectdock`. Its version is stored in
+The bundle uses the stable identifier `fr.wasabee.ejectdock`. Preferences saved
+by earlier builds under `fr.leo.ejectdock` are copied once on first launch. Its version is stored in
 `VERSION` and `Resources/Info.plist`; the build checks that they match. The application
 includes a dedicated icon; the menu bar uses native system symbols for its states.
 English is the application's development language. The interface supports English
-and French. Choose **Settings > Language** (or **Réglages > Langue**) to follow
+and French. Choose **Settings > Language** to follow
 the system language or select a language explicitly. The selection is remembered;
 the tooltip and panel update immediately.
 

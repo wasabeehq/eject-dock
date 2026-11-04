@@ -21,10 +21,18 @@ final class CoreTests: XCTestCase {
     }
 
     func testGestures() {
-        XCTAssertEqual(MenuGesture.action(secondary: false, option: false, control: false, hasSelection: false), .openMenu)
-        XCTAssertEqual(MenuGesture.action(secondary: false, option: false, control: false, hasSelection: true), .ejectSelection)
-        XCTAssertEqual(MenuGesture.action(secondary: true, option: false, control: false, hasSelection: true), .openMenu)
-        XCTAssertEqual(MenuGesture.action(secondary: false, option: true, control: false, hasSelection: true), .openMenu)
-        XCTAssertEqual(MenuGesture.action(secondary: false, option: false, control: true, hasSelection: true), .openMenu)
+        func action(_ secondary: Bool, _ option: Bool, _ control: Bool, _ selected: Bool) -> MenuGesture.Action {
+            MenuGesture.action(secondary: secondary, option: option, control: control, hasSelection: selected)
+        }
+        XCTAssertEqual(action(false, false, false, true), .openMenu)
+        XCTAssertEqual(action(false, false, false, false), .openMenu)
+        XCTAssertEqual(action(true, false, false, true), .ejectSelection)
+        XCTAssertEqual(action(true, false, false, false), .openMenu)
+        XCTAssertEqual(action(false, false, true, true), .ejectSelection)
+        XCTAssertEqual(action(false, false, true, false), .openMenu)
+        XCTAssertEqual(action(false, true, false, true), .openMenu)
+        XCTAssertEqual(action(false, true, false, false), .openMenu)
+        XCTAssertEqual(action(true, true, false, true), .openMenu)
+        XCTAssertEqual(action(false, true, true, true), .openMenu)
     }
 }

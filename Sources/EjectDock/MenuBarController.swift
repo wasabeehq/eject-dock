@@ -145,6 +145,9 @@ final class MenuBarController: NSObject {
         guard let button = item.button else { return }
         if panel.isShown { panel.performClose(nil); return }
         updatePanel()
+        // Leave room for the header, status, actions and expanded settings around the list.
+        let screenHeight = button.window?.screen?.visibleFrame.height ?? 800
+        panelModel.maxListHeight = max(240, screenHeight - 360)
         NSApp.activate(ignoringOtherApps: true)
         panel.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
         panel.contentViewController?.view.window?.makeKey()
@@ -153,8 +156,9 @@ final class MenuBarController: NSObject {
     private func configurePanel() {
         panel.behavior = .transient
         panel.animates = false
-        panel.contentSize = NSSize(width: 410, height: 580)
-        panel.contentViewController = NSHostingController(rootView: DiskPanelView(model: panelModel))
+        let host = NSHostingController(rootView: DiskPanelView(model: panelModel))
+        host.sizingOptions = [.preferredContentSize]
+        panel.contentViewController = host
         panelModel.onSelected = { [weak self] in self?.ejectPrimaryAction() }
         panelModel.onAll = { [weak self] in self?.ejectAllExternal() }
         panelModel.onImages = { [weak self] in self?.ejectAllImages() }
@@ -173,9 +177,10 @@ final class MenuBarController: NSObject {
         let busy = ejectionService.isRunning
         func row(_ target: InventoryTarget) -> DiskPanelRow {
             let mounts = target.volumes.compactMap(\.mountPath)
+            let status = Localization.text(mounts.isEmpty ? "disk.notMounted" : "panel.mounted")
             let subtitle = target.selectable
-                ? Localization.text(mounts.isEmpty ? "disk.notMounted" : "panel.mounted")
-                : Localization.text(target.rejectionReason ?? "inventory.unknown")
+                ? status
+                : status + " · " + Localization.text(target.rejectionReason ?? "inventory.unknown")
             return DiskPanelRow(id: target.bsdName, stableID: target.stableID, name: target.name,
                 subtitle: subtitle, detail: mounts.joined(separator: " · "),
                 selected: preferences.isSelected(target.stableID),

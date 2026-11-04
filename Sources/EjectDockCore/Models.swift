@@ -132,6 +132,7 @@ public enum MenuGesture {
     public enum Action: Equatable { case openMenu, ejectSelection }
     public static func action(secondary: Bool, option: Bool, control: Bool,
                               hasSelection: Bool) -> Action {
-        secondary || option || control || !hasSelection ? .openMenu : .ejectSelection
+        if option || !hasSelection { return .openMenu }
+        return secondary || control ? .ejectSelection : .openMenu
     }
 }
