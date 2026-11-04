@@ -1,0 +1,8 @@
+  caveats <<~EOS
+    EjectDock is ad hoc signed and not notarized by Apple, so macOS Gatekeeper
+    blocks the first launch. Approve it once with either method:
+
+      1. Open EjectDock, then go to System Settings > Privacy & Security,
+         scroll to the Security section, and click "Open Anyway".
+      2. Or run: xattr -dr com.apple.quarantine /Applications/EjectDock.app
+  EOS

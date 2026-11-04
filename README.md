@@ -85,6 +85,26 @@ Dock grouping currently requires a complete USB IORegistry subtree. Native
 Thunderbolt or PCIe storage whose boundary cannot be proven is not offered as a
 dock target. It remains available through the existing per-disk actions.
 
+## Install
+
+EjectDock is distributed for free through a Homebrew tap as an ad hoc signed
+universal build (Apple Silicon and Intel, macOS 13 or later):
+
+```sh
+brew install --cask wasabeehq/tools/ejectdock
+```
+
+The build is not notarized by Apple, so Gatekeeper blocks the first launch. Approve
+it once, either by opening EjectDock and then choosing System Settings > Privacy &
+Security > Open Anyway, or by running:
+
+```sh
+xattr -dr com.apple.quarantine /Applications/EjectDock.app
+```
+
+Install only from the official release of this repository. The tap is published
+only after the first GitHub release exists.
+
 ## Distribution
 
 The bundle uses the stable identifier `fr.wasabee.ejectdock`. Preferences saved
@@ -96,8 +116,9 @@ and French. Choose **Settings > Language** to follow
 the system language or select a language explicitly. The selection is remembered;
 the tooltip and panel update immediately.
 
-Release scripts and CI are prepared separately from local installation. Public
-distribution requires a Developer ID certificate and notarization credentials.
+Release scripts and CI are prepared separately from local installation. Notarized
+distribution requires a Developer ID certificate and notarization credentials;
+`scripts/release-adhoc.sh` is the explicit opt-in path for the free ad hoc tap.
 A cask must be generated from a verified, published archive and checksum; no
 placeholder download is published. See the roadmap and distribution guide for
 remaining gates.

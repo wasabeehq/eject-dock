@@ -4,7 +4,7 @@ cask "ejectdock" do
 
   url "__URL__"
   name "EjectDock"
-  desc "Eject selected external disks from the macOS menu bar"
+  desc "Eject selected external disks from the menu bar"
   homepage "https://github.com/wasabeehq/eject-dock"
 
   depends_on macos: ">= :ventura"
@@ -12,4 +12,5 @@ cask "ejectdock" do
   app "EjectDock.app"
 
   zap trash: "~/Library/Preferences/fr.wasabee.ejectdock.plist"
+__CAVEATS__
 end

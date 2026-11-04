@@ -90,6 +90,83 @@ The workflow defaults to uploading an Actions artifact without creating a
 release. Its explicit `publish_release` input must be enabled to create a GitHub
 release. No release is published merely by pushing a tag.
 
+## Free distribution without a Developer ID (ad hoc)
+
+Until a Developer ID certificate is available, EjectDock can be distributed for
+free through a personal Homebrew tap using an ad hoc signed universal build. This
+is an explicit, opt-in path. `scripts/release.sh` is unchanged and keeps
+requiring Developer ID and notarization; it never falls back to ad hoc signing.
+
+Trade-offs: the build is not notarized, so Gatekeeper blocks the first launch.
+Users must approve it once. Homebrew does not bypass Gatekeeper, and the cask
+does not remove quarantine attributes or change any Gatekeeper setting. The
+approval is the user's choice:
+
+- Open EjectDock, then System Settings > Privacy & Security > Open Anyway.
+- Or run `xattr -dr com.apple.quarantine /Applications/EjectDock.app`.
+
+Flow, from a clean checkout of the release commit:
+
+1. Build, sign ad hoc, archive, checksum and verify. The tag must match `VERSION`:
+
+   ```sh
+   ./scripts/test.sh
+   RELEASE_TAG=v0.1.0 ./scripts/release-adhoc.sh
+   ```
+
+   This writes `dist/EjectDock-0.1.0-universal.zip` and its `.sha256`, then runs
+   `scripts/verify-archive.sh` and requires an `adhoc` signature and both
+   architectures. The file name is the one the cask expects.
+
+2. Create the tag and the GitHub release on `wasabeehq/eject-dock`, attaching the
+   exact archive (do not rebuild it afterwards, the checksum would change):
+
+   ```sh
+   git tag v0.1.0 && git push origin v0.1.0
+   gh release create v0.1.0 dist/EjectDock-0.1.0-universal.zip \
+     --repo wasabeehq/eject-dock --title "EjectDock 0.1.0" --notes "Ad hoc signed, not notarized. See the README for Gatekeeper approval."
+   ```
+
+3. Create the public tap repository `wasabeehq/homebrew-tools` (once) and clone it
+   next to this repository:
+
+   ```sh
+   gh repo create wasabeehq/homebrew-tools --public --description "Homebrew tap"
+   git clone https://github.com/wasabeehq/homebrew-tools.git ../homebrew-tools
+   ```
+
+4. Generate the cask. The `--adhoc` flag adds the Gatekeeper `caveats` block. The
+   generator checks that the archive really is ad hoc signed (and refuses an ad hoc
+   archive without the flag), requires the release URL to exist, and requires the
+   downloaded file's SHA-256 to match the local archive:
+
+   ```sh
+   ./scripts/generate-cask.sh --adhoc \
+     dist/EjectDock-0.1.0-universal.zip \
+     ../homebrew-tools/Casks/ejectdock.rb
+   ```
+
+5. Commit and push the cask in the tap repository:
+
+   ```sh
+   cd ../homebrew-tools
+   git add Casks/ejectdock.rb
+   git commit -m "Add ejectdock 0.1.0"
+   git push origin main
+   ```
+
+6. Users install with:
+
+   ```sh
+   brew install --cask wasabeehq/tools/ejectdock
+   ```
+
+   Homebrew prints the caveats. The first launch then needs the Gatekeeper
+   approval described above.
+
+When a Developer ID certificate is obtained, switch to the notarized flow below
+and regenerate the cask without `--adhoc` so the caveats disappear.
+
 ## Homebrew tap
 
 The distribution architecture uses the public application repository
@@ -109,7 +186,7 @@ This prevents publishing placeholder URLs or unverified hashes. The generated
 cask installs `EjectDock.app`, requires macOS 13 or later, preserves preferences
 during ordinary uninstall, and removes preferences only with an explicit zap.
 
-Once a signed and notarized release and the tap exist, validate the complete
+Once a release and the tap exist, validate the complete
 flow on a disposable test installation:
 
 ```sh
